@@ -78,7 +78,7 @@ def findSubclassesRecursively(cls):
         yield subclass
 
 
-class Tenma72Base(object):
+class Tenma72Base:
     """
         Control a Tenma 72-XXXX DC bench power supply
 
