@@ -4,7 +4,7 @@ import time
 import matplotlib.pyplot as plt
 
 # Import tenma library
-from tenma.tenmaDcLib import (
+from tenma.tenma_dc_lib import (
     instantiate_tenma_class_from_device_response,
 )
 

@@ -6,7 +6,7 @@ tenma-control
 General Description
 -------------------
 
-tenma-control (tenmaControl.py) lets you control your bench power supply directly from the command line
+tenma-control (tenma_control.py) lets you control your bench power supply directly from the command line
 via a serial connection.
 
 This page provides a set of common examples on how to use the tenma-control command. For a full description of the options provided simply run::

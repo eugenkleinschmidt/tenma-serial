@@ -2,10 +2,10 @@
 
 Provides two basic controllers (tested on Linux) for a TENMA DC power supply via serial interface. Working on python 2.7 and python 3.
 
- * tenmaControl.py (tenma-control) (command line utility)
- * gtkIndicator.py (tenma-applet) (GTK indicator to sit on tray)
+ * tenma_control.py (tenma-control) (command line utility)
+ * gtk_indicator.py (tenma-applet) (GTK indicator to sit on tray)
 
-# tenmaControl
+# tenma_control
 
 ## What is this?
 
@@ -55,43 +55,43 @@ It does not have many requirements, so you might just clone the repo and run it.
 Note that it can be connected via a usb to serial cable, or directly with the
 provided USB cable. In Linux it identifies the usb as `Bus 001 Device 015: ID
 0416:5011 Winbond Electronics Corp. Virtual Com Port `, running `dmesg` to get
-where the /dev/ttyACMX device registerd and pointing tenmaControl.py to that
+where the /dev/ttyACMX device registerd and pointing tenma_control.py to that
 device should work.
 
-any of the following examples can run via `tenma-control` or `tenmaControl.py`.
+any of the following examples can run via `tenma-control` or `tenma_control.py`.
 
 ### Print the Tenma version
 
-	tenmaControl.py /dev/ttyUSB0
+	tenma_control.py /dev/ttyUSB0
 
 ### Set the current and the voltage
 
 For example: 2.2 Amperes 5V:
 
-	tenmaControl.py -c 2200 -v 5000 /dev/ttyUSB0
+	tenma_control.py -c 2200 -v 5000 /dev/ttyUSB0
 
 ### Turn on the channel output
 
-	tenmaControl.py --on /dev/ttyUSB0
+	tenma_control.py --on /dev/ttyUSB0
 
 ### Turn OFF the channel output
 
-	tenmaControl.py --off /dev/ttyUSB0
+	tenma_control.py --off /dev/ttyUSB0
 
 ### Load an existing memory
 
-	tenmaControl.py -r 1
-	tenmaControl.py --recall 2
+	tenma_control.py -r 1
+	tenma_control.py --recall 2
 
 ### Create a new value for a memory 4
 
-	tenmaControl.py -c 2200 -v 5000 --save 4 /dev/ttyUSB0
+	tenma_control.py -c 2200 -v 5000 --save 4 /dev/ttyUSB0
 
 ### Print everything
 
-	tenmaControl.py -c 2200 -v 5000 --save 4 --verbose --debug /dev/ttyUSB0
+	tenma_control.py -c 2200 -v 5000 --save 4 --verbose --debug /dev/ttyUSB0
 
-# tenma-applet gtkIndicator
+# tenma-applet gtk_indicator
 
 A very simple GTK indicator to control a tenma DC power supply from a graphical desktop. Provides ON, OFF and RESET facilities. Simply start it with:
 
@@ -99,7 +99,7 @@ A very simple GTK indicator to control a tenma DC power supply from a graphical 
 
 Or directly from the source code via:
 
-	./gtkIndicator.py
+	./gtk_indicator.py
 
 ## Known Shortcomings:
  * The physical buttons are blocked for a while after connecting.

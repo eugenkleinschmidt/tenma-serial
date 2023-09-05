@@ -16,7 +16,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 """
-    tenmaDcLib is small python library to control a Tenma 72-XXXX programmable
+    tenma_dc_lib is small python library to control a Tenma 72-XXXX programmable
     DC power supply, either from USB or Serial.
 
     Supported models:
@@ -43,7 +43,8 @@ from typing import Generator, Literal
 import serial
 
 ChannelModeType = Literal["C.V", "C.C"]
-TrackingMode = Literal["Independent", "Tracking Series", "Tracking Parallel", "Unknown"]
+TrackingMode = Literal["Independent",
+                       "Tracking Series", "Tracking Parallel", "Unknown"]
 
 TrackingModeType: dict[TrackingMode, int | None] = {
     "Independent": 0,
@@ -318,7 +319,8 @@ class Tenma72Base:
         self.checkCurrent(channel, mA)
 
         A = float(mA) / 1000.0
-        command = "ISET{channel}:{amperes:.3f}".format(channel=channel, amperes=A)
+        command = "ISET{channel}:{amperes:.3f}".format(
+            channel=channel, amperes=A)
 
         self._sendCommand(command)
         readcurrent = self.readCurrent(channel)
@@ -358,7 +360,8 @@ class Tenma72Base:
         self.checkVoltage(channel, mV)
 
         volts = float(mV) / 1000.0
-        command = "VSET{channel}:{volts:.2f}".format(channel=channel, volts=volts)
+        command = "VSET{channel}:{volts:.2f}".format(
+            channel=channel, volts=volts)
 
         self._sendCommand(command)
         readVolts = self.readVoltage(channel)
@@ -835,7 +838,8 @@ class Tenma72_13320(Tenma72Base):
         :raises TenmaException: If trying to read the current of Channel 3
         """
         if channel == 3:
-            raise TenmaException("Channel CH3 does not support reading current")
+            raise TenmaException(
+                "Channel CH3 does not support reading current")
         return super().readCurrent(channel)
 
     def runningCurrent(self, channel: int) -> float:
@@ -847,7 +851,8 @@ class Tenma72_13320(Tenma72Base):
         :raises TenmaException: If trying to read the current of Channel 3
         """
         if channel == 3:
-            raise TenmaException("Channel CH3 does not support reading current")
+            raise TenmaException(
+                "Channel CH3 does not support reading current")
         return super().runningCurrent(channel)
 
     def setVoltage(self, channel: int, mV: int) -> float:

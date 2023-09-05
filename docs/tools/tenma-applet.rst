@@ -6,7 +6,7 @@ tenma-applet
 General Description
 -------------------
 
-tenma-applet (gtkIndicator.py) lets you control your bench power supply using a simple GTK applet sitting on the system bar.
+tenma-applet (gtk_indicator.py) lets you control your bench power supply using a simple GTK applet sitting on the system bar.
 
 It provides basic ON/OFF and Memory selection. Current version is limited to the values already set in the unit.
 

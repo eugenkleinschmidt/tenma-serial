@@ -1,4 +1,4 @@
-from tenma.tenmaDcLib import Tenma72Base
+from tenma.tenma_dc_lib import Tenma72Base
 
 
 class TestTenma72Base:

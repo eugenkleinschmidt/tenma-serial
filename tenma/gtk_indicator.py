@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-    gtkIndicator is a small gtk graphical tool to control a Tenma DC power
+    gtk_indicator is a small gtk graphical tool to control a Tenma DC power
     supply from a desktop environment.
     Copyright (C) 2017 Jordi Castells
 
@@ -30,11 +30,11 @@ gi.require_version("Gtk", "3.0")
 gi.require_version("AppIndicator3", "0.1")
 gi.require_version("Notify", "0.7")
 
-from gi.repository import AppIndicator3 as appindicator
-from gi.repository import Gtk as gtk
-from gi.repository import Notify as notify
+from gi.repository import AppIndicator3 as appindicator  # noqa E402
+from gi.repository import Gtk as gtk  # noqa E402
+from gi.repository import Notify as notify  # noqa E402
 
-from .tenmaDcLib import Tenma72Base, instantiate_tenma_class_from_device_response
+from .tenma_dc_lib import Tenma72Base, instantiate_tenma_class_from_device_response  # noqa E402
 
 APPINDICATOR_ID = "Tenma DC Power"
 
@@ -69,7 +69,7 @@ def serial_ports() -> list[str]:
     return result
 
 
-class gtkController:
+class GtkController:
     def __init__(self) -> None:
         self.serialPort = "No Port"
         self.serialMenu: gtk.Menu | None = None
@@ -79,13 +79,14 @@ class gtkController:
         self.itemSet: list[gtk.MenuItem] = []
         pass
 
-    def portSelected(self, source: gtk.MenuItem) -> None:
-        oldPort = self.serialPort
+    def port_selected(self, source: gtk.MenuItem) -> None:
+        old_port = self.serialPort
         self.serialPort = source.get_label()
 
         try:
             if not self.T:
-                self.T = instantiate_tenma_class_from_device_response(self.serialPort)
+                self.T = instantiate_tenma_class_from_device_response(
+                    self.serialPort)
             else:
                 self.T.setPort(self.serialPort)
         except Exception as e:
@@ -93,7 +94,7 @@ class gtkController:
             notify.Notification.new(
                 "<b>ERROR</b>", repr(e), gtk.STOCK_DIALOG_ERROR
             ).show()
-            self.serialPort = oldPort
+            self.serialPort = old_port
             return
 
         ver = self.T.getVersion()
@@ -103,7 +104,7 @@ class gtkController:
                 "No response on %s" % self.serialPort,
                 gtk.STOCK_DIALOG_ERROR,
             ).show()
-            self.serialPort = oldPort
+            self.serialPort = old_port
             self.setItemSetStatus(False)
             return
         else:
@@ -160,7 +161,7 @@ class gtkController:
 
         for serialPort in serial_ports():
             menuEntry = gtk.MenuItem(serialPort)
-            menuEntry.connect("activate", self.portSelected)
+            menuEntry.connect("activate", self.port_selected)
             self.serialMenu.append(menuEntry)
             menuEntry.show()
 
@@ -275,7 +276,7 @@ class gtkController:
 
 def main() -> None:
     notify.init(APPINDICATOR_ID)
-    controller = gtkController()
+    controller = GtkController()
     indicator = appindicator.Indicator.new(
         APPINDICATOR_ID,
         pkg_resources.resource_filename(__name__, "logo.png"),

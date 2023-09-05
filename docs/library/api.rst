@@ -31,5 +31,5 @@ stdout::
 API Documentation
 -----------------
 
-.. automodule:: tenma.tenmaDcLib
+.. automodule:: tenma.tenma_dc_lib
    :members:

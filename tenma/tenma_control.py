@@ -19,7 +19,7 @@
 """
 import argparse
 
-from .tenmaDcLib import TenmaException, instantiate_tenma_class_from_device_response
+from .tenma_dc_lib import TenmaException, instantiate_tenma_class_from_device_response
 
 
 def main() -> None:
@@ -27,8 +27,10 @@ def main() -> None:
         description="Control a Tenma 72-2540 power supply connected to a serial port"
     )
     parser.add_argument("device", default="/dev/ttyUSB0")
-    parser.add_argument("-v", "--voltage", help="set mV", required=False, type=int)
-    parser.add_argument("-c", "--current", help="set mA", required=False, type=int)
+    parser.add_argument("-v", "--voltage", help="set mV",
+                        required=False, type=int)
+    parser.add_argument("-c", "--current", help="set mA",
+                        required=False, type=int)
     parser.add_argument(
         "-C",
         "--channel",
@@ -142,7 +144,8 @@ def main() -> None:
     T = None
     try:
         VERB = args["verbose"]
-        T = instantiate_tenma_class_from_device_response(args["device"], args["debug"])
+        T = instantiate_tenma_class_from_device_response(
+            args["device"], args["debug"])
         if not args["script"]:
             print("VERSION: ", T.getVersion())
 
