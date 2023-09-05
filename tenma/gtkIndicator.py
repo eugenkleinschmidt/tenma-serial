@@ -30,12 +30,11 @@ gi.require_version("Gtk", "3.0")
 gi.require_version("AppIndicator3", "0.1")
 gi.require_version("Notify", "0.7")
 
-from gi.repository import Gtk as gtk
 from gi.repository import AppIndicator3 as appindicator
+from gi.repository import Gtk as gtk
 from gi.repository import Notify as notify
 
 from .tenmaDcLib import Tenma72Base, instantiate_tenma_class_from_device_response
-
 
 APPINDICATOR_ID = "Tenma DC Power"
 

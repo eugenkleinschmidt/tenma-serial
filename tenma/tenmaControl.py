@@ -19,7 +19,7 @@
 """
 import argparse
 
-from .tenmaDcLib import instantiate_tenma_class_from_device_response, TenmaException
+from .tenmaDcLib import TenmaException, instantiate_tenma_class_from_device_response
 
 
 def main() -> None:

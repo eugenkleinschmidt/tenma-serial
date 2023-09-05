@@ -35,13 +35,12 @@
     they use the same serial protocol.
 """
 from __future__ import annotations
-import serial
+
 import time
-
-from typing import Literal, Generator
 from dataclasses import dataclass
-from enum import Enum
+from typing import Generator, Literal
 
+import serial
 
 ChannelModeType = Literal["C.V", "C.C"]
 TrackingMode = Literal["Independent", "Tracking Series", "Tracking Parallel", "Unknown"]
