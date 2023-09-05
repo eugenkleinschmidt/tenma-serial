@@ -9,3 +9,4 @@ tests/coverage.xml
 tests/htmlcov/
 tests/test-results/
 venv
+logs

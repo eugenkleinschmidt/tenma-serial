@@ -37,26 +37,25 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
+from enum import IntEnum
 from typing import Generator, Literal
 
 import serial
 
 ChannelModeType = Literal["C.V", "C.C"]
-TrackingMode = Literal["Independent", "Tracking Series", "Tracking Parallel", "Unknown"]
 
-TrackingModeType: dict[TrackingMode, int | None] = {
-    "Independent": 0,
-    "Tracking Series": 1,
-    "Tracking Parallel": 2,
-    "Unknown": None,
-}
+
+class TrackingModeType(IntEnum):
+    Independent = 0
+    TrackingSeries = 1
+    TrackingParallel = 2
 
 
 @dataclass
 class Mode:
     ch1_mode: ChannelModeType
     ch2_mode: ChannelModeType
-    tracking_mode: TrackingMode
+    tracking_mode: TrackingModeType
     beep_enabled: bool = False
     lock_enabled: bool = False
     out1_enabled: bool = False
@@ -261,20 +260,10 @@ class Tenma72Base:
         lock = status & 0x20
         out = status & 0x40
 
-        tracking_mode: TrackingMode
-        if tracking == 0:
-            tracking_mode = "Independent"
-        elif tracking == 1:
-            tracking_mode = "Tracking Series"
-        elif tracking == 3:
-            tracking_mode = "Tracking Parallel"
-        else:
-            tracking_mode = "Unknown"
-
         return Mode(
             ch1_mode="C.V" if ch1mode else "C.C",
             ch2_mode="C.V" if ch2mode else "C.C",
-            tracking_mode=tracking_mode,
+            tracking_mode=TrackingModeType(tracking),
             beep_enabled=bool(beep),
             lock_enabled=bool(lock),
             out1_enabled=bool(out),
@@ -389,9 +378,7 @@ class Tenma72Base:
         :raises TenmaError: If the memory index is outside the range
         """
         if conf > self.NCONFS:
-            raise TenmaError(
-                f"Trying to set M{conf} with only {self.NCONFS} slots"
-            )
+            raise TenmaError(f"Trying to set M{conf} with only {self.NCONFS} slots")
 
         command = f"SAV{conf}"
         self._send_command(command)
@@ -436,9 +423,7 @@ class Tenma72Base:
     def recall_conf(self, conf: int) -> None:
         """Load existing configuration in Memory. Same as pressing any Mx button on the unit."""
         if conf > self.NCONFS:
-            raise TenmaError(
-                f"Trying to recall M{conf} with only {self.NCONFS} confs"
-            )
+            raise TenmaError(f"Trying to recall M{conf} with only {self.NCONFS} confs")
         self._send_command("RCL{confg}")
 
     def set_ocp(self, enable: bool = True) -> None:
@@ -503,7 +488,7 @@ class Tenma72Base:
         """
         raise NotImplementedError("Not supported by all models")
 
-    def set_tracking(self, tracking_mode: TrackingMode) -> None:
+    def set_tracking(self, tracking_mode: TrackingModeType) -> None:
         """
         Set the tracking mode of the power supply outputs.
 
@@ -779,20 +764,10 @@ class Tenma7213320(Tenma72Base):
         out1 = status & 0x40
         out2 = status & 0x80
 
-        tracking_mode: TrackingMode
-        if tracking == 0:
-            tracking_mode = "Independent"
-        elif tracking == 1:
-            tracking_mode = "Tracking Series"
-        elif tracking == 3:
-            tracking_mode = "Tracking Parallel"
-        else:
-            tracking_mode = "Unknown"
-
         return Mode(
             ch1_mode="C.V" if ch1mode else "C.C",
             ch2_mode="C.V" if ch2mode else "C.C",
-            tracking_mode=tracking_mode,
+            tracking_mode=TrackingModeType(tracking),
             out1_enabled=bool(out1),
             out2_enabled=bool(out2),
         )
@@ -895,7 +870,7 @@ class Tenma7213320(Tenma72Base):
         enable_flag = 1 if enable else 0
         self._send_command(f"LOCK{enable_flag}")
 
-    def set_tracking(self, tracking_mode: TrackingMode) -> None:
+    def set_tracking(self, tracking_mode: TrackingModeType) -> None:
         """
         Set the tracking mode of the power supply outputs.
 
@@ -905,7 +880,7 @@ class Tenma7213320(Tenma72Base):
 
         :param tracking_mode: one of 0, 1 or 2
         """
-        self._send_command(f"TRACK{TrackingModeType[tracking_mode]}")
+        self._send_command(f"TRACK{tracking_mode}")
 
     def start_auto_voltage_step(
         self,
@@ -930,10 +905,8 @@ class Tenma7213320(Tenma72Base):
         # TODO: improve this check for when we're stepping down in voltage
         if step_millivolts > stop_millivolts:
             raise TenmaError(
-
                 f"Channel CH{channel} step voltage {step_millivolts}V"
                 f" higher than stop voltage {stop_millivolts}V"
-
             )
 
         start_volts = float(start_millivolts) / 1000.0
@@ -974,10 +947,8 @@ class Tenma7213320(Tenma72Base):
         self.check_current(channel, stop_milliamps)
         if step_milliamps > stop_milliamps:
             raise TenmaError(
-
                 f"Channel CH{channel} step current {step_milliamps}mA higher"
                 f" than stop current {stop_milliamps}mA"
-
             )
 
         start_amps = float(start_milliamps) / 1000.0
