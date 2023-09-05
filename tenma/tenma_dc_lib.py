@@ -16,23 +16,22 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 """
-    tenma_dc_lib is small python library to control a Tenma 72-XXXX programmable
-    DC power supply, either from USB or Serial.
+This module controls a Tenma 72-XXXX programmable DC power supply, either from USB or Serial.
 
-    Supported models:
+Supported models:
 
-     * 72_2545 -> Tested on HW
-     * 72_2535 -> Set as manufacturer manual (not tested)
-     * 72_2540 -> Set as manufacturer manual (not tested)
-     * 72_2550 -> Tested on HW
-     * 72-2705 -> Tested on HW
-     * 72_2930 -> Set as manufacturer manual (not tested)
-     * 72_2940 -> Set as manufacturer manual (not tested)
-     * 72_13320 -> Set as manufacturer manual (not tested)
-     * 72_13330 -> Tested on HW
+* 72_2545 -> Tested on HW
+* 72_2535 -> Set as manufacturer manual (not tested)
+* 72_2540 -> Set as manufacturer manual (not tested)
+* 72_2550 -> Tested on HW
+* 72-2705 -> Tested on HW
+* 72_2930 -> Set as manufacturer manual (not tested)
+* 72_2940 -> Set as manufacturer manual (not tested)
+* 72_13320 -> Set as manufacturer manual (not tested)
+* 72_13330 -> Tested on HW
 
-    Other units from Korad or Vellman might work as well since
-    they use the same serial protocol.
+Other units from Korad or Vellman might work as well since
+they use the same serial protocol.
 """
 from __future__ import annotations
 
@@ -72,8 +71,7 @@ def instantiate_tenma_class_from_device_response(
     device: str, debug: bool = False
 ) -> Tenma72Base:
     """
-    Get a proper Tenma subclass depending on the version
-    response from the unit.
+    Get a proper Tenma subclass depending on the version response from the unit.
 
     The subclasses mainly deal with the limit checks for each
     unit.
@@ -99,22 +97,13 @@ def instantiate_tenma_class_from_device_response(
 def find_subclasses_recursively(
     cls: type[Tenma72Base],
 ) -> Generator[type[Tenma72Base], type[Tenma72Base], None]:
-    """
-    Finds all subclasses of a given class recursively
-    """
+    """Find all subclasses of a given class recursively."""
     for subclass in cls.__subclasses__():
         yield from find_subclasses_recursively(subclass)
         yield subclass
 
 
 class Tenma72Base:
-    """
-    Control a Tenma 72-XXXX DC bench power supply
-
-    Defaults in this class assume a 72-2540, use
-    subclasses for other models
-    """
-
     MATCH_STR = [""]
 
     # 72Base sets some defaults. Subclasses should define
@@ -126,6 +115,11 @@ class Tenma72Base:
     SERIAL_EOL = ""
 
     def __init__(self, serial_port: str, debug: bool = False) -> None:
+        """Control a Tenma 72-XXXX DC bench power supply.
+
+        Defaults in this class assume a 72-2540, use
+        subclasses for other models
+        """
         self.ser = serial.Serial(
             port=serial_port,
             baudrate=9600,
@@ -137,7 +131,7 @@ class Tenma72Base:
 
     def set_port(self, serial_port: str) -> None:
         """
-        Sets up the serial port with a new COM/tty device
+        Set up the serial port with a new COM/tty device.
 
         :param serial_port: COM/tty device
         """
@@ -150,7 +144,7 @@ class Tenma72Base:
 
     def _send_command(self, command: str) -> None:
         """
-        Sends a command to the serial port of a power supply
+        Send a command to the serial port of a power supply.
 
         :param command: Command to send
         """
@@ -163,7 +157,7 @@ class Tenma72Base:
 
     def _read_bytes(self) -> bytearray:
         """
-        Read serial output as a stream of bytes
+        Read serial output as a stream of bytes.
 
         :return: Bytes read as a list of integers
         """
@@ -178,7 +172,7 @@ class Tenma72Base:
 
     def __read_output(self) -> str:
         """
-        Read serial otput as a string
+        Read serial otput as a string.
 
         :return: Data read as a string
         """
@@ -193,7 +187,7 @@ class Tenma72Base:
 
     def check_channel(self, channel: int) -> None:
         """
-        Checks that the given channel is valid for the power supply
+        Check that the given channel is valid for the power supply.
 
         :param channel: Channel to check
         :raises TenmaError: If the channel is outside the range for the power supply
@@ -207,7 +201,7 @@ class Tenma72Base:
 
     def check_voltage(self, channel: int, mv: int) -> None:
         """
-        Checks that the given voltage is valid for the power supply
+        Check that the given voltage is valid for the power supply.
 
         :param channel: Channel to check
         :param mv: Voltage to check
@@ -220,7 +214,7 @@ class Tenma72Base:
 
     def check_current(self, channel: int, ma: int) -> None:
         """
-        Checks that the given current is valid for the power supply
+        Check that the given current is valid for the power supply.
 
         :param channel: Channel to check
         :param ma: current to check
@@ -233,7 +227,7 @@ class Tenma72Base:
 
     def get_version(self, serial_eol: str = "") -> str:
         """
-        Returns a single string with the version of the Tenma Device and Protocol user
+        Return a single string with the version of the Tenma Device and Protocol user.
 
         :param serial_eol: End of line terminator, defaults to ""
         :return: The version string from the power supply
@@ -243,7 +237,7 @@ class Tenma72Base:
 
     def get_status(self) -> Mode:
         """
-        Returns the power supply status of type Status
+        Return the power supply status of type Status.
 
         * ch1Mode: "C.V | C.C"
         * ch2Mode: "C.V | C.C"
@@ -290,7 +284,7 @@ class Tenma72Base:
 
     def read_current(self, channel: int) -> float:
         """
-        Reads the current setting for the given channel
+        Read the current setting for the given channel.
 
         :param channel: Channel to read the current of
         :return: Current for the channel in Amps as a float
@@ -303,7 +297,7 @@ class Tenma72Base:
 
     def set_current(self, channel: int, ma: int) -> float:
         """
-        Sets the current of the specified channel
+        Set the current of the specified channel.
 
         :param channel: Channel to set the current of
         :param ma: Current to set the channel to, in mA
@@ -326,7 +320,7 @@ class Tenma72Base:
 
     def read_voltage(self, channel: int) -> float:
         """
-        Reads the voltage setting for the given channel
+        Read the voltage setting for the given channel.
 
         :param channel: Channel to read the voltage of
         :return: Voltage for the channel in Volts as a float
@@ -339,7 +333,7 @@ class Tenma72Base:
 
     def set_voltage(self, channel: int, mv: int) -> float:
         """
-        Sets the voltage of the specified channel
+        Set the voltage of the specified channel.
 
         :param channel: Channel to set the voltage of
         :param mv: voltage to set the channel to, in mV
@@ -362,7 +356,7 @@ class Tenma72Base:
 
     def running_current(self, channel: int) -> float:
         """
-        Returns the current read of a running channel
+        Return the current read of a running channel.
 
         :param channel: Channel to get the running current for
         :return: The running current of the channel in Amps as a float
@@ -375,7 +369,7 @@ class Tenma72Base:
 
     def running_voltage(self, channel: int) -> float:
         """
-        Returns the voltage read of a running channel
+        Return the voltage read of a running channel.
 
         :param channel: Channel to get the running voltage for
         :return: The running voltage of the channel in volts as a float
@@ -408,7 +402,8 @@ class Tenma72Base:
 
     def save_conf_flow(self, conf: int, channel: int) -> None:
         """
-        Performs a full save flow for the unit.
+        Perform a full save flow for the unit.
+
         Since save_conf only calls the SAV<NR1> command, and that does not
         work as advertised, or expected, at least in 72_2540.
 
@@ -421,7 +416,6 @@ class Tenma72Base:
         :param conf: Memory index to store to
         :param channel: Channel with output to store
         """
-
         self.off()
 
         # Read current voltage
@@ -444,10 +438,7 @@ class Tenma72Base:
             print("Current:", curr)
 
     def recall_conf(self, conf: int) -> None:
-        """
-        Load existing configuration in Memory. Same as pressing any Mx button on the unit
-        """
-
+        """Load existing configuration in Memory. Same as pressing any Mx button on the unit."""
         if conf > self.NCONFS:
             raise TenmaError(
                 "Trying to recall M{conf} with only {nconf} confs".format(
@@ -471,7 +462,7 @@ class Tenma72Base:
 
     def set_ovp(self, enable: bool = True) -> None:
         """
-        Enable or disable OVP
+        Enable or disable OVP.
 
         There's no feedback from the serial connection to determine
         whether OVP was set or not.
@@ -484,7 +475,7 @@ class Tenma72Base:
 
     def set_beep(self, enable: bool = True) -> None:
         """
-        Enable or disable BEEP
+        Enable or disable BEEP.
 
         There's no feedback from the serial connection to determine
         whether BEEP was set or not.
@@ -496,28 +487,22 @@ class Tenma72Base:
         self._send_command(command)
 
     def on(self) -> None:
-        """
-        Turns on the output
-        """
+        """Turn on the output."""
         command = "OUT1"
         self._send_command(command)
 
     def off(self) -> None:
-        """
-        Turns off the output
-        """
+        """Turn off the output."""
         command = "OUT0"
         self._send_command(command)
 
     def close(self) -> None:
-        """
-        Closes the serial port
-        """
+        """Close the serial port."""
         self.ser.close()
 
     def set_lock(self, enable: bool = True) -> None:
         """
-        Set the front-panel lock on or off
+        Set the front-panel lock on or off.
 
         :param enable: Enable lock, defaults to True
         :raises NotImplementedError Not implemented in this base class
@@ -526,7 +511,7 @@ class Tenma72Base:
 
     def set_tracking(self, tracking_mode: TrackingMode) -> None:
         """
-        Sets the tracking mode of the power supply outputs
+        Set the tracking mode of the power supply outputs.
 
         :param tracking_mode: Tracking mode
         :raises NotImplementedError Not implemented in this base class
@@ -542,8 +527,7 @@ class Tenma72Base:
         step_time: int,
     ) -> None:
         """
-        Starts an automatic voltage step from Start mV to Stop mV,
-        incrementing by Step mV every Time seconds
+        Start an automatic voltage step from Start mV to Stop mV, incrementing by Step mV every Time seconds.
 
         :param channel: Channel to start voltage step on
         :param start_millivolts: Starting voltage in mV
@@ -556,7 +540,7 @@ class Tenma72Base:
 
     def stop_auto_voltage_step(self, channel: int) -> None:
         """
-        Stops the auto voltage step on the specified channel
+        Stop the auto voltage step on the specified channel.
 
         :param channel: Channel to stop the auto voltage step on
         :raises NotImplementedError Not implemented in this base class
@@ -572,8 +556,7 @@ class Tenma72Base:
         step_time: int,
     ) -> None:
         """
-        Starts an automatic current step from Start mA to Stop mA,
-        incrementing by Step mA every Time seconds
+        Start an automatic current step from Start mA to Stop mA, incrementing by Step mA every Time seconds.
 
         :param channel: Channel to start current step on
         :param start_milliamps: Starting current in mA
@@ -586,7 +569,7 @@ class Tenma72Base:
 
     def stop_auto_current_step(self, channel: int) -> None:
         """
-        Stops the auto current step on the specified channel
+        Stop the auto current step on the specified channel.
 
         :param channel: Channel to stop the auto current step on
         :raises NotImplementedError Not implemented in this base class
@@ -595,9 +578,10 @@ class Tenma72Base:
 
     def set_manual_voltage_step(self, channel: int, step_millivolts: int) -> None:
         """
-        Sets the manual step voltage of the channel
+        Set the manual step voltage of the channel.
+
         When a VUP or VDOWN command is sent to the power supply channel, that channel
-        will step up or down by step_millivolts mV
+        will step up or down by step_millivolts mV.
 
         :param channel: Channel to set the step voltage for
         :param step_millivolts: Voltage to step up or down by when triggered
@@ -607,8 +591,9 @@ class Tenma72Base:
 
     def step_voltage_up(self, channel: int) -> None:
         """
-        Increse the voltage by the configured step voltage on the specified channel
-        Call "set_manual_voltage_step" to set the step voltage
+        Increse the voltage by the configured step voltage on the specified channel.
+
+        Call "set_manual_voltage_step" to set the step voltage.
 
         :param channel: Channel to increase the voltage for
         :raises NotImplementedError Not implemented in this base class
@@ -617,8 +602,9 @@ class Tenma72Base:
 
     def step_voltage_down(self, channel: int) -> None:
         """
-        Decrese the voltage by the configured step voltage on the specified channel
-        Call "set_manual_voltage_step" to set the step voltage
+        Decrese the voltage by the configured step voltage on the specified channel.
+
+        all "set_manual_voltage_step" to set the step voltage.
 
         :param channel: Channel to decrease the voltage for
         :raises NotImplementedError Not implemented in this base class
@@ -627,9 +613,10 @@ class Tenma72Base:
 
     def set_manual_current_step(self, channel: int, step_milliamps: int) -> None:
         """
-        Sets the manual step current of the channel
+        Set the manual step current of the channel.
+
         When a IUP or IDOWN command is sent to the power supply channel, that channel
-        will step up or down by step_milliamps mA
+        will step up or down by step_milliamps mA.
 
         :param channel: Channel to set the step current for
         :param step_milliamps: Current to step up or down by when triggered
@@ -639,8 +626,9 @@ class Tenma72Base:
 
     def step_current_up(self, channel: int) -> None:
         """
-        Increse the current by the configured step current on the specified channel
-        Call "set_manual_current_step" to set the step current
+        Increse the current by the configured step current on the specified channel.
+
+        Call "set_manual_current_step" to set the step current.
 
         :param channel: Channel to increase the current for
         :raises NotImplementedError Not implemented in this base class
@@ -649,8 +637,9 @@ class Tenma72Base:
 
     def step_current_down(self, channel: int) -> None:
         """
-        Decrese the current by the configured step current on the specified channel
-        Call "set_manual_current_step" to set the step current
+        Decrese the current by the configured step current on the specified channel.
+
+        Call "set_manual_current_step" to set the step current.
 
         :param channel: Channel to decrease the current for
         :raises NotImplementedError Not implemented in this base class
@@ -771,7 +760,7 @@ class Tenma7213320(Tenma72Base):
 
     def get_status(self) -> Mode:
         """
-        Returns the power supply status as a dictionary of values
+        Return the power supply status as a dictionary of values.
 
         * ch1Mode: "C.V | C.C"
         * ch2Mode: "C.V | C.C"
@@ -816,7 +805,7 @@ class Tenma7213320(Tenma72Base):
 
     def read_current(self, channel: int) -> float:
         """
-        Reads the current setting for the given channel
+        Read the current setting for the given channel.
 
         :param channel: Channel to read the current of
         :return: Current for the channel in Amps as a float
@@ -828,7 +817,7 @@ class Tenma7213320(Tenma72Base):
 
     def running_current(self, channel: int) -> float:
         """
-        Returns the current read of a running channel
+        Return the current read of a running channel.
 
         :param channel: Channel to get the running current for
         :return: The running current of the channel in Amps as a float
@@ -840,7 +829,7 @@ class Tenma7213320(Tenma72Base):
 
     def set_voltage(self, channel: int, mv: int) -> float:
         """
-        Sets the voltage of the specified channel
+        Set the voltage of the specified channel.
 
         :param channel: Channel to set the voltage of
         :param mv: voltage to set the channel to, in mV
@@ -866,7 +855,7 @@ class Tenma7213320(Tenma72Base):
 
     def set_ovp(self, enable: bool = True) -> None:
         """
-        Enable or disable OVP
+        Enable or disable OVP.
 
         There's no feedback from the serial connection to determine
         whether OVP was set or not.
@@ -878,7 +867,7 @@ class Tenma7213320(Tenma72Base):
 
     def on(self, channel: int | None = None) -> None:
         """
-        Turns on the output(s)
+        Turn on the output(s).
 
         :param channel: Channel to turn on, defaults to None (turn all channels on)
         """
@@ -892,7 +881,7 @@ class Tenma7213320(Tenma72Base):
 
     def off(self, channel: int | None = None) -> None:
         """
-        Turns off the output(s)
+        Turn off the output(s).
 
         :param channel: Channel to turn on, defaults to None (turn all channels off)
         """
@@ -905,7 +894,7 @@ class Tenma7213320(Tenma72Base):
 
     def set_lock(self, enable: bool = True) -> None:
         """
-        Set the front-panel lock on or off
+        Set the front-panel lock on or off.
 
         :param enable: Enable lock, defaults to True
         """
@@ -914,10 +903,11 @@ class Tenma7213320(Tenma72Base):
 
     def set_tracking(self, tracking_mode: TrackingMode) -> None:
         """
-        Sets the tracking mode of the power supply outputs
+        Set the tracking mode of the power supply outputs.
+
         0: Independent
         1: Series
-        2: Parallel
+        2: Parallel.
 
         :param tracking_mode: one of 0, 1 or 2
         """
@@ -932,8 +922,7 @@ class Tenma7213320(Tenma72Base):
         step_time: int,
     ) -> None:
         """
-        Starts an automatic voltage step from Start mV to Stop mV,
-        incrementing by Step mV every Time seconds
+        Start an automatic voltage step from Start mV to Stop mV, incrementing by Step mV every Time seconds.
 
         :param channel: Channel to start voltage step on
         :param start_millivolts: Starting voltage in mV
@@ -962,7 +951,7 @@ class Tenma7213320(Tenma72Base):
 
     def stop_auto_voltage_step(self, channel: int) -> None:
         """
-        Stops the auto voltage step on the specified channel
+        Stop the auto voltage step on the specified channel.
 
         :param channel: Channel to stop the auto voltage step on
         """
@@ -978,8 +967,7 @@ class Tenma7213320(Tenma72Base):
         step_time: int,
     ) -> None:
         """
-        Starts an automatic current step from Start mA to Stop mA,
-        incrementing by Step mA every Time seconds
+        Start an automatic current step from Start mA to Stop mA incrementing by Step mA every Time seconds.
 
         :param channel: Channel to start current step on
         :param start_milliamps: Starting current in mA
@@ -1007,7 +995,7 @@ class Tenma7213320(Tenma72Base):
 
     def stop_auto_current_step(self, channel: int) -> None:
         """
-        Stops the auto current step on the specified channel
+        Stop the auto current step on the specified channel.
 
         :param channel: Channel to stop the auto current step on
         """
@@ -1016,9 +1004,10 @@ class Tenma7213320(Tenma72Base):
 
     def set_manual_voltage_step(self, channel: int, step_millivolts: int) -> None:
         """
-        Sets the manual step voltage of the channel
+        Set the manual step voltage of the channel.
+
         When a VUP or VDOWN command is sent to the power supply channel, that channel
-        will step up or down by step_millivolts mV
+        will step up or down by step_millivolts mV.
 
         :param channel: Channel to set the step voltage for
         :param step_millivolts: Voltage to step up or down by when triggered
@@ -1031,8 +1020,9 @@ class Tenma7213320(Tenma72Base):
 
     def step_voltage_up(self, channel: int) -> None:
         """
-        Increse the voltage by the configured step voltage on the specified channel
-        Call "set_manual_voltage_step" to set the step voltage
+        Increse the voltage by the configured step voltage on the specified channel.
+
+        Call "set_manual_voltage_step" to set the step voltage.
 
         :param channel: Channel to increase the voltage for
         """
@@ -1041,8 +1031,9 @@ class Tenma7213320(Tenma72Base):
 
     def step_voltage_down(self, channel: int) -> None:
         """
-        Decrese the voltage by the configured step voltage on the specified channel
-        Call "set_manual_voltage_step" to set the step voltage
+        Decrese the voltage by the configured step voltage on the specified channel.
+
+        Call "set_manual_voltage_step" to set the step voltage.
 
         :param channel: Channel to decrease the voltage for
         """
@@ -1051,9 +1042,10 @@ class Tenma7213320(Tenma72Base):
 
     def set_manual_current_step(self, channel: int, step_milliamps: int) -> None:
         """
-        Sets the manual step current of the channel
+        Set the manual step current of the channel.
+
         When a IUP or IDOWN command is sent to the power supply channel, that channel
-        will step up or down by step_milliamps mA
+        will step up or down by step_milliamps mA.
 
         :param channel: Channel to set the step current for
         :param step_milliamps: Current to step up or down by when triggered
@@ -1066,8 +1058,9 @@ class Tenma7213320(Tenma72Base):
 
     def step_current_up(self, channel: int) -> None:
         """
-        Increse the current by the configured step current on the specified channel
-        Call "set_manual_current_step" to set the step current
+        Increse the current by the configured step current on the specified channel.
+
+        Call "set_manual_current_step" to set the step current.
 
         :param channel: Channel to increase the current for
         """
@@ -1076,8 +1069,9 @@ class Tenma7213320(Tenma72Base):
 
     def step_current_down(self, channel: int) -> None:
         """
-        Decrese the current by the configured step current on the specified channel
-        Call "set_manual_current_step" to set the step current
+        Decrese the current by the configured step current on the specified channel.
+
+        Call "set_manual_current_step" to set the step current.
 
         :param channel: Channel to decrease the current for
         """

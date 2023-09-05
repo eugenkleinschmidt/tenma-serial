@@ -1,21 +1,21 @@
 #!/usr/bin/python
 """
-    gtk_indicator is a small gtk graphical tool to control a Tenma DC power
-    supply from a desktop environment.
-    Copyright (C) 2017 Jordi Castells
+gtk_indicator is a small gtk graphical tool to control a Tenma DC power
+supply from a desktop environment.
+Copyright (C) 2017 Jordi Castells.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>
 """
 
 import glob
@@ -43,8 +43,9 @@ APPINDICATOR_ID = "Tenma DC Power"
 
 
 def serial_ports() -> list[str]:
-    """Lists serial port names
-    Shamesly ripped from stackOverflow
+    """
+    Lists serial port names
+    Shamesly ripped from stackOverflow.
 
     :raises EnvironmentError:
         On unsupported or unknown platforms
@@ -118,9 +119,7 @@ class GtkController:
         self.memoryMenu = self.build_memory_submenu(None, self.T.NCONFS)
 
     def memory_selected(self, source):
-        """
-        Select one of the multiple memories
-        """
+        """Select one of the multiple memories."""
         if self.T:
             try:
                 memory_index = source.get_label()
@@ -134,7 +133,7 @@ class GtkController:
     def build_memory_submenu(self, source, nmemories: int):
         """
         Build a submenu containing a list of INTS
-        with the available memories for the unit
+        with the available memories for the unit.
         """
         if not self.memoryMenu:
             self.memoryMenu = gtk.Menu()
@@ -153,7 +152,7 @@ class GtkController:
     def build_serial_submenu(self, source):
         """
         Build the serialSubmenu assuming that it is un runtime (remove,
-        existing entries and call show in all new entries)
+        existing entries and call show in all new entries).
         """
         if not self.serialMenu:
             self.serialMenu = gtk.Menu()

@@ -14,9 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 # @author Jordi Castells
 
-"""
-    Command line tenma control program for Tenma72XXXX bank power supply
-"""
+"""Command line tenma control program for Tenma72XXXX bank power supply."""
 import argparse
 
 from .tenma_dc_lib import (
