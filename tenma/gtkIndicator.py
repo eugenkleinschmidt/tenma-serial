@@ -26,9 +26,9 @@ import gi
 import pkg_resources
 import serial
 
-gi.require_version('Gtk', '3.0')
-gi.require_version('AppIndicator3', '0.1')
-gi.require_version('Notify', '0.7')
+gi.require_version("Gtk", "3.0")
+gi.require_version("AppIndicator3", "0.1")
+gi.require_version("Notify", "0.7")
 
 from gi.repository import Gtk as gtk
 from gi.repository import AppIndicator3 as appindicator
@@ -37,27 +37,27 @@ from gi.repository import Notify as notify
 from .tenmaDcLib import Tenma72Base, instantiate_tenma_class_from_device_response
 
 
-APPINDICATOR_ID = 'Tenma DC Power'
+APPINDICATOR_ID = "Tenma DC Power"
 
 
 def serial_ports() -> list[str]:
-    """ Lists serial port names
-        Shamesly ripped from stackOverflow
+    """Lists serial port names
+    Shamesly ripped from stackOverflow
 
-        :raises EnvironmentError:
-            On unsupported or unknown platforms
-        :returns:
-            A list of the serial ports available on the system
+    :raises EnvironmentError:
+        On unsupported or unknown platforms
+    :returns:
+        A list of the serial ports available on the system
     """
-    if sys.platform.startswith('win'):
-        ports = ['COM%s' % (i + 1) for i in range(256)]
-    elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+    if sys.platform.startswith("win"):
+        ports = ["COM%s" % (i + 1) for i in range(256)]
+    elif sys.platform.startswith("linux") or sys.platform.startswith("cygwin"):
         # this excludes your current terminal "/dev/tty"
-        ports = glob.glob('/dev/tty[A-Za-z]*')
-    elif sys.platform.startswith('darwin'):
-        ports = glob.glob('/dev/tty.*')
+        ports = glob.glob("/dev/tty[A-Za-z]*")
+    elif sys.platform.startswith("darwin"):
+        ports = glob.glob("/dev/tty.*")
     else:
-        raise EnvironmentError('Unsupported platform')
+        raise EnvironmentError("Unsupported platform")
 
     result = []
     for port in ports:
@@ -70,7 +70,7 @@ def serial_ports() -> list[str]:
     return result
 
 
-class gtkController():
+class gtkController:
     def __init__(self) -> None:
         self.serialPort = "No Port"
         self.serialMenu: gtk.Menu | None = None
@@ -91,16 +91,19 @@ class gtkController():
                 self.T.setPort(self.serialPort)
         except Exception as e:
             self.setItemSetStatus(False)
-            notify.Notification.new("<b>ERROR</b>", repr(e),
-                                    gtk.STOCK_DIALOG_ERROR).show()
+            notify.Notification.new(
+                "<b>ERROR</b>", repr(e), gtk.STOCK_DIALOG_ERROR
+            ).show()
             self.serialPort = oldPort
             return
 
         ver = self.T.getVersion()
         if not ver:
-            notify.Notification.new("<b>ERROR</b>",
-                                    "No response on %s" % self.serialPort,
-                                    gtk.STOCK_DIALOG_ERROR).show()
+            notify.Notification.new(
+                "<b>ERROR</b>",
+                "No response on %s" % self.serialPort,
+                gtk.STOCK_DIALOG_ERROR,
+            ).show()
             self.serialPort = oldPort
             self.setItemSetStatus(False)
             return
@@ -114,7 +117,7 @@ class gtkController():
 
     def memorySelected(self, source):
         """
-            Select one of the multiple memories
+        Select one of the multiple memories
         """
         if self.T:
             try:
@@ -122,13 +125,14 @@ class gtkController():
                 self.T.OFF()
                 self.T.recallConf(int(memory_index))
             except Exception as e:
-                notify.Notification.new("<b>ERROR</b>", repr(e),
-                                        gtk.STOCK_DIALOG_ERROR).show()
+                notify.Notification.new(
+                    "<b>ERROR</b>", repr(e), gtk.STOCK_DIALOG_ERROR
+                ).show()
 
     def build_memory_submenu(self, source, nmemories: int):
         """
-            Build a submenu containing a list of INTS
-            with the available memories for the unit
+        Build a submenu containing a list of INTS
+        with the available memories for the unit
         """
         if not self.memoryMenu:
             self.memoryMenu = gtk.Menu()
@@ -136,9 +140,9 @@ class gtkController():
         for entry in self.memoryMenu.get_children():
             self.memoryMenu.remove(entry)
 
-        for m_index in range(1, nmemories+1):
+        for m_index in range(1, nmemories + 1):
             menuEntry = gtk.MenuItem(m_index)
-            menuEntry.connect('activate', self.memorySelected)
+            menuEntry.connect("activate", self.memorySelected)
             self.memoryMenu.append(menuEntry)
             menuEntry.show()
 
@@ -146,8 +150,8 @@ class gtkController():
 
     def build_serial_submenu(self, source):
         """
-            Build the serialSubmenu assuming that it is un runtime (remove,
-            existing entries and call show in all new entries)
+        Build the serialSubmenu assuming that it is un runtime (remove,
+        existing entries and call show in all new entries)
         """
         if not self.serialMenu:
             self.serialMenu = gtk.Menu()
@@ -157,7 +161,7 @@ class gtkController():
 
         for serialPort in serial_ports():
             menuEntry = gtk.MenuItem(serialPort)
-            menuEntry.connect('activate', self.portSelected)
+            menuEntry.connect("activate", self.portSelected)
             self.serialMenu.append(menuEntry)
             menuEntry.show()
 
@@ -166,7 +170,7 @@ class gtkController():
         sep.show()
 
         menuEntry = gtk.MenuItem("Reload")
-        menuEntry.connect('activate', self.build_serial_submenu)
+        menuEntry.connect("activate", self.build_serial_submenu)
         self.serialMenu.append(menuEntry)
         menuEntry.show()
 
@@ -192,23 +196,23 @@ class gtkController():
         self.item_unit_version.set_right_justified(True)
         self.item_unit_version.set_sensitive(False)
 
-        item_quit = gtk.MenuItem('Quit')
-        item_quit.connect('activate', self.quit)
+        item_quit = gtk.MenuItem("Quit")
+        item_quit.connect("activate", self.quit)
 
-        item_serial_menu = gtk.MenuItem('Serial')
+        item_serial_menu = gtk.MenuItem("Serial")
         item_serial_menu.set_submenu(serialMenu)
 
-        item_memory_menu = gtk.MenuItem('Memory')
+        item_memory_menu = gtk.MenuItem("Memory")
         item_memory_menu.set_submenu(memoryMenu)
 
-        item_on = gtk.MenuItem('ON')
-        item_on.connect('activate', self.tenmaTurnOn)
+        item_on = gtk.MenuItem("ON")
+        item_on.connect("activate", self.tenmaTurnOn)
 
-        item_off = gtk.MenuItem('OFF')
-        item_off.connect('activate', self.tenmaTurnOff)
+        item_off = gtk.MenuItem("OFF")
+        item_off.connect("activate", self.tenmaTurnOff)
 
-        item_reset = gtk.MenuItem('RESET')
-        item_reset.connect('activate', self.tenmaReset)
+        item_reset = gtk.MenuItem("RESET")
+        item_reset.connect("activate", self.tenmaReset)
 
         menu.append(self.item_connectedPort)
         menu.append(self.item_unit_version)
@@ -246,16 +250,18 @@ class gtkController():
             try:
                 self.T.ON()
             except Exception as e:
-                notify.Notification.new("<b>ERROR</b>", repr(e),
-                                        gtk.STOCK_DIALOG_ERROR).show()
+                notify.Notification.new(
+                    "<b>ERROR</b>", repr(e), gtk.STOCK_DIALOG_ERROR
+                ).show()
 
     def tenmaTurnOff(self) -> None:
         if self.T:
             try:
                 self.T.OFF()
             except Exception as e:
-                notify.Notification.new("<b>ERROR</b>", repr(e),
-                                        gtk.STOCK_DIALOG_ERROR).show()
+                notify.Notification.new(
+                    "<b>ERROR</b>", repr(e), gtk.STOCK_DIALOG_ERROR
+                ).show()
 
     def tenmaReset(self) -> None:
         if self.T:
@@ -263,16 +269,19 @@ class gtkController():
                 self.T.OFF()
                 self.T.ON()
             except Exception as e:
-                notify.Notification.new("<b>ERROR</b>", repr(e),
-                                        gtk.STOCK_DIALOG_ERROR).show()
+                notify.Notification.new(
+                    "<b>ERROR</b>", repr(e), gtk.STOCK_DIALOG_ERROR
+                ).show()
 
 
 def main() -> None:
     notify.init(APPINDICATOR_ID)
     controller = gtkController()
-    indicator = appindicator.Indicator.new(APPINDICATOR_ID,
-                                           pkg_resources.resource_filename(__name__, 'logo.png'),
-                                           appindicator.IndicatorCategory.SYSTEM_SERVICES)
+    indicator = appindicator.Indicator.new(
+        APPINDICATOR_ID,
+        pkg_resources.resource_filename(__name__, "logo.png"),
+        appindicator.IndicatorCategory.SYSTEM_SERVICES,
+    )
     indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
     indicator.set_menu(controller.build_gtk_menu())
     signal.signal(signal.SIGINT, signal.SIG_DFL)

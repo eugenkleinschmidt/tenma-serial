@@ -5,10 +5,13 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 # Import tenma library
-from tenma.tenmaDcLib import instantiate_tenma_class_from_device_response, TenmaException
+from tenma.tenmaDcLib import (
+    instantiate_tenma_class_from_device_response,
+    TenmaException,
+)
 
 # Set here the device node to connect to
-device_node = '/dev/ttyACM0'
+device_node = "/dev/ttyACM0"
 
 # Retrieve a proper tenma handler for your unit (mainly tries to keep values
 # within ranges)
