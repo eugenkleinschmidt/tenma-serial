@@ -15,13 +15,13 @@ device_node = "/dev/ttyACM0"
 # within ranges)
 tenma = instantiate_tenma_class_from_device_response(device_node)
 
-print(tenma.getVersion())
+print(tenma.get_version())
 
 data = []
 tstamps = []
 while True:
-    current = tenma.runningCurrent(1)
-    voltage = tenma.runningVoltage(1)
+    current = tenma.running_current(1)
+    voltage = tenma.running_voltage(1)
     timestamp = time.time()
 
     data.append(voltage)

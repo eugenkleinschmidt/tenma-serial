@@ -17,15 +17,15 @@ may or may not suit your limits) by simply using the provided function::
 
 or the more manual (with your own knowledge) approach::
 
-   from tenma import Tenma72_2550
-   tenma = Tenma72_2550('/dev/ttyUSB0')
+   from tenma import Tenma722550
+   tenma = Tenma722550('/dev/ttyUSB0')
 
 In case something does not work as you would expect, instantiate the class with the 
 debug option enabled so all the transmissions to and from the unit are printed to
 stdout::
 
-   from tenma import Tenma72_2550
-   tenma = Tenma72_2550('/dev/ttyUSB0')
+   from tenma import Tenma722550
+   tenma = Tenma722550('/dev/ttyUSB0')
 
 
 API Documentation

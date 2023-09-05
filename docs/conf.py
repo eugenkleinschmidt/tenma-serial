@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath(".."))
 # -- Project information -----------------------------------------------------
 
 project = "tenma-serial"
-copyright = "2020, Jordi Castells"
+copyright = "2020, Jordi Castells"  # noqa A001
 author = "Jordi Castells"
 
 # The full version, including alpha/beta/rc tags

@@ -74,7 +74,7 @@ For example: 2.2 Amperes 5V:
 
 	tenma_control.py --on /dev/ttyUSB0
 
-### Turn OFF the channel output
+### Turn off the channel output
 
 	tenma_control.py --off /dev/ttyUSB0
 
@@ -93,7 +93,7 @@ For example: 2.2 Amperes 5V:
 
 # tenma-applet gtk_indicator
 
-A very simple GTK indicator to control a tenma DC power supply from a graphical desktop. Provides ON, OFF and RESET facilities. Simply start it with:
+A very simple GTK indicator to control a tenma DC power supply from a graphical desktop. Provides on, off and RESET facilities. Simply start it with:
 
     tenma-applet
 

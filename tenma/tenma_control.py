@@ -15,22 +15,24 @@
 # @author Jordi Castells
 
 """
-    Command line tenma control program for Tenma72_XXXX bank power supply
+    Command line tenma control program for Tenma72XXXX bank power supply
 """
 import argparse
 
-from .tenma_dc_lib import TenmaException, instantiate_tenma_class_from_device_response
+from .tenma_dc_lib import (
+    Tenma72Base,
+    TenmaError,
+    instantiate_tenma_class_from_device_response,
+)
 
 
-def main() -> None:
+def main() -> None:  # noqa C901
     parser = argparse.ArgumentParser(
         description="Control a Tenma 72-2540 power supply connected to a serial port"
     )
     parser.add_argument("device", default="/dev/ttyUSB0")
-    parser.add_argument("-v", "--voltage", help="set mV",
-                        required=False, type=int)
-    parser.add_argument("-c", "--current", help="set mA",
-                        required=False, type=int)
+    parser.add_argument("-v", "--voltage", help="set mV", required=False, type=int)
+    parser.add_argument("-c", "--current", help="set mA", required=False, type=int)
     parser.add_argument(
         "-C",
         "--channel",
@@ -110,10 +112,10 @@ def main() -> None:
         default=None,
     )
     parser.add_argument(
-        "--on", help="Set output to ON", action="store_true", default=False
+        "--on", help="Set output to on", action="store_true", default=False
     )
     parser.add_argument(
-        "--off", help="Set output to OFF", action="store_true", default=False
+        "--off", help="Set output to off", action="store_true", default=False
     )
     parser.add_argument(
         "--verbose", help="Chatty program", action="store_true", default=False
@@ -128,125 +130,124 @@ def main() -> None:
         default=False,
     )
     parser.add_argument(
-        "--runningCurrent",
+        "--running_current",
         help="returns the running output current",
         action="store_true",
         default=False,
     )
     parser.add_argument(
-        "--runningVoltage",
+        "--running_voltage",
         help="returns the running output voltage",
         action="store_true",
         default=False,
     )
     args = vars(parser.parse_args())
 
-    T = None
+    t: Tenma72Base | None = None
     try:
-        VERB = args["verbose"]
-        T = instantiate_tenma_class_from_device_response(
-            args["device"], args["debug"])
+        verbose = args["verbose"]
+        t = instantiate_tenma_class_from_device_response(args["device"], args["debug"])
         if not args["script"]:
-            print("VERSION: ", T.getVersion())
+            print("VERSION: ", t.get_version())
 
         # On saving, we want to move to the proper memory 1st, then
         # perform the current/voltage/options setting
         # and after that, perform the save
         if args["save"]:
-            if VERB:
+            if verbose:
                 print("Recalling Memory", args["save"])
 
-            T.OFF()  # Turn off for safety
-            T.recallConf(args["save"])
+            t.off()  # Turn off for safety
+            t.recall_conf(args["save"])
 
         # Now, with memory, or no memory handling, perform the changes
         if args["ocp"] is not None:
-            if VERB:
+            if verbose:
                 if args["ocp"]:
                     print("Enable overcurrent protection")
                 else:
                     print("Disable overcurrent protection")
 
-            T.setOCP(args["ocp"])
+            t.set_ocp(args["ocp"])
 
         if args["ovp"] is not None:
-            if VERB:
+            if verbose:
                 if args["ovp"]:
                     print("Enable overvoltage protection")
                 else:
                     print("Disable overvoltage protection")
 
-            T.setOVP(args["ovp"])
+            t.set_ovp(args["ovp"])
 
         if args["beep"] is not None:
-            if VERB:
+            if verbose:
                 if args["beep"]:
                     print("Enable unit beep")
                 else:
                     print("Disable unit beep")
 
-            T.setBEEP(args["beep"])
+            t.set_beep(args["beep"])
 
         if args["voltage"]:
-            if VERB:
+            if verbose:
                 print("Setting voltage to ", args["voltage"])
-            T.setVoltage(args["channel"], args["voltage"])
+            t.set_voltage(args["channel"], args["voltage"])
 
         if args["current"]:
-            if VERB:
+            if verbose:
                 print("Setting current to ", args["current"])
-            T.setCurrent(args["channel"], args["current"])
+            t.set_current(args["channel"], args["current"])
 
         if args["save"]:
-            if VERB:
+            if verbose:
                 print("Saving to Memory", args["save"])
 
-            T.saveConfFlow(args["save"], args["channel"])
+            t.save_conf_flow(args["save"], args["channel"])
 
         if args["recall"]:
-            if VERB:
+            if verbose:
                 print("Loading from Memory: ", args["recall"])
 
-            T.recallConf(args["recall"])
-            volt = T.readVoltage(args["channel"])
-            curr = T.readCurrent(args["channel"])
+            t.recall_conf(args["recall"])
+            volt = t.read_voltage(args["channel"])
+            curr = t.read_current(args["channel"])
 
             print("Loaded from Memory: ", args["recall"])
             print("Voltage:", volt)
             print("Current:", curr)
 
         if args["off"]:
-            if VERB:
-                print("Turning OUTPUT OFF")
-            T.OFF()
+            if verbose:
+                print("Turning OUTPUT off")
+            t.off()
 
         if args["on"]:
-            if VERB:
-                print("Turning OUTPUT ON")
-            T.ON()
+            if verbose:
+                print("Turning OUTPUT on")
+            t.on()
 
         if args["status"]:
-            if VERB:
+            if verbose:
                 print("Retrieving status")
-            print(T.getStatus())
+            print(t.get_status())
 
-        if args["runningCurrent"]:
-            if VERB:
+        if args["running_current"]:
+            if verbose:
                 print("Retrieving running Current")
-            print(T.runningCurrent(args["channel"]))
+            print(t.running_current(args["channel"]))
 
-        if args["runningVoltage"]:
-            if VERB:
+        if args["running_voltage"]:
+            if verbose:
                 print("Retrieving running Voltage")
-            print(T.runningVoltage(args["channel"]))
+            print(t.running_voltage(args["channel"]))
 
-    except TenmaException as e:
+    except TenmaError as e:
         print("Lib ERROR: ", repr(e))
     finally:
-        if VERB:
+        if verbose:
             print("Closing connection")
-        if T:
-            T.close()
+        if t:
+            t.close()
 
 
 if __name__ == "__main__":
