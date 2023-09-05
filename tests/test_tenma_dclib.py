@@ -1,6 +1,6 @@
 import pytest
 
-from tenma.tenma_dc_lib import Tenma72Base, TenmaError
+from tenma_serial.tenma_dc_lib import Tenma72Base, TenmaError
 
 
 class TestTenma72Base:

@@ -40,7 +40,7 @@ convention = "google"
 max-complexity = 10
 
 [tool.ruff.isort]
-known-first-party = ["tenma"]
+known-first-party = ["tenma_serial"]
 
 # MYPY settings
 [tool.mypy]

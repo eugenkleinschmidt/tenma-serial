@@ -1,4 +1,4 @@
-from tenma.tenma_control import main
+from tenma_serial.tenma_control import main
 
 
 def test_main() -> None:
