@@ -194,9 +194,7 @@ class Tenma72Base:
         """
         if channel > self.NCHANNELS:
             raise TenmaError(
-                "Channel CH{channel} not in range ({nch} channels supported)".format(
-                    channel=channel, nch=self.NCHANNELS
-                )
+                f"Channel CH{channel} not in range ({self.NCHANNELS} channels supported)"
             )
 
     def check_voltage(self, channel: int, mv: int) -> None:
@@ -363,7 +361,7 @@ class Tenma72Base:
         """
         self.check_channel(channel)
 
-        command = "IOUT{}?".format(channel)
+        command = f"IOUT{channel}?"
         self._send_command(command)
         return float(self.__read_output())
 
@@ -376,7 +374,7 @@ class Tenma72Base:
         """
         self.check_channel(channel)
 
-        command = "VOUT{}?".format(channel)
+        command = f"VOUT{channel}?"
         self._send_command(command)
         return float(self.__read_output())
 
@@ -392,9 +390,7 @@ class Tenma72Base:
         """
         if conf > self.NCONFS:
             raise TenmaError(
-                "Trying to set M{conf} with only {nconf} slots".format(
-                    conf=conf, nconf=self.NCONFS
-                )
+                f"Trying to set M{conf} with only {self.NCONFS} slots"
             )
 
         command = f"SAV{conf}"
@@ -441,9 +437,7 @@ class Tenma72Base:
         """Load existing configuration in Memory. Same as pressing any Mx button on the unit."""
         if conf > self.NCONFS:
             raise TenmaError(
-                "Trying to recall M{conf} with only {nconf} confs".format(
-                    conf=conf, nconf=self.NCONFS
-                )
+                f"Trying to recall M{conf} with only {self.NCONFS} confs"
             )
         self._send_command("RCL{confg}")
 
@@ -875,7 +869,7 @@ class Tenma7213320(Tenma72Base):
             command = "OUT12:1"
         else:
             self.check_channel(channel)
-            command = "OUT{}:1".format(channel)
+            command = f"OUT{channel}:1"
 
         self._send_command(command)
 
@@ -889,7 +883,7 @@ class Tenma7213320(Tenma72Base):
             command = "OUT12:0"
         else:
             self.check_channel(channel)
-            command = "OUT{}:0".format(channel)
+            command = f"OUT{channel}:0"
         self._send_command(command)
 
     def set_lock(self, enable: bool = True) -> None:
@@ -936,10 +930,10 @@ class Tenma7213320(Tenma72Base):
         # TODO: improve this check for when we're stepping down in voltage
         if step_millivolts > stop_millivolts:
             raise TenmaError(
-                (
-                    f"Channel CH{channel} step voltage {step_millivolts}V"
-                    f" higher than stop voltage {stop_millivolts}V"
-                )
+
+                f"Channel CH{channel} step voltage {step_millivolts}V"
+                f" higher than stop voltage {stop_millivolts}V"
+
             )
 
         start_volts = float(start_millivolts) / 1000.0
@@ -980,10 +974,10 @@ class Tenma7213320(Tenma72Base):
         self.check_current(channel, stop_milliamps)
         if step_milliamps > stop_milliamps:
             raise TenmaError(
-                (
-                    f"Channel CH{channel} step current {step_milliamps}mA higher"
-                    f" than stop current {stop_milliamps}mA"
-                )
+
+                f"Channel CH{channel} step current {step_milliamps}mA higher"
+                f" than stop current {stop_milliamps}mA"
+
             )
 
         start_amps = float(start_milliamps) / 1000.0
