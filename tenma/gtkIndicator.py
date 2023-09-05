@@ -34,16 +34,13 @@ from gi.repository import Gtk as gtk
 from gi.repository import AppIndicator3 as appindicator
 from gi.repository import Notify as notify
 
-try:
-    from tenma.tenmaDcLib import instantiate_tenma_class_from_device_response, TenmaException
-except Exception:
-    from tenmaDcLib import instantiate_tenma_class_from_device_response, TenmaException
+from .tenmaDcLib import Tenma72Base, instantiate_tenma_class_from_device_response
 
 
 APPINDICATOR_ID = 'Tenma DC Power'
 
 
-def serial_ports():
+def serial_ports() -> list[str]:
     """ Lists serial port names
         Shamesly ripped from stackOverflow
 
@@ -74,16 +71,16 @@ def serial_ports():
 
 
 class gtkController():
-    def __init__(self):
+    def __init__(self) -> None:
         self.serialPort = "No Port"
-        self.serialMenu = None
-        self.memoryMenu = None
+        self.serialMenu: gtk.Menu | None = None
+        self.memoryMenu: gtk.Menu | None = None
 
-        self.T = None
-        self.itemSet = []
+        self.T: Tenma72Base | None = None
+        self.itemSet: list[gtk.MenuItem] = []
         pass
 
-    def portSelected(self, source):
+    def portSelected(self, source: gtk.MenuItem) -> None:
         oldPort = self.serialPort
         self.serialPort = source.get_label()
 
@@ -97,6 +94,7 @@ class gtkController():
             notify.Notification.new("<b>ERROR</b>", repr(e),
                                     gtk.STOCK_DIALOG_ERROR).show()
             self.serialPort = oldPort
+            return
 
         ver = self.T.getVersion()
         if not ver:
@@ -105,6 +103,7 @@ class gtkController():
                                     gtk.STOCK_DIALOG_ERROR).show()
             self.serialPort = oldPort
             self.setItemSetStatus(False)
+            return
         else:
             notify.Notification.new("<b>CONNECTED TO</b>", ver, None).show()
             self.setItemSetStatus(True)
@@ -117,15 +116,16 @@ class gtkController():
         """
             Select one of the multiple memories
         """
-        try:
-            memory_index = source.get_label()
-            self.T.OFF()
-            self.T.recallConf(int(memory_index))
-        except Exception as e:
-            notify.Notification.new("<b>ERROR</b>", repr(e),
-                                    gtk.STOCK_DIALOG_ERROR).show()
+        if self.T:
+            try:
+                memory_index = source.get_label()
+                self.T.OFF()
+                self.T.recallConf(int(memory_index))
+            except Exception as e:
+                notify.Notification.new("<b>ERROR</b>", repr(e),
+                                        gtk.STOCK_DIALOG_ERROR).show()
 
-    def build_memory_submenu(self, source, nmemories):
+    def build_memory_submenu(self, source, nmemories: int):
         """
             Build a submenu containing a list of INTS
             with the available memories for the unit
@@ -172,13 +172,13 @@ class gtkController():
 
         return self.serialMenu
 
-    def setItemSetStatus(self, onOff):
+    def setItemSetStatus(self, onOff: bool) -> None:
         if onOff:
             [i.set_sensitive(True) for i in self.itemSet]
         else:
             [i.set_sensitive(False) for i in self.itemSet]
 
-    def build_gtk_menu(self):
+    def build_gtk_menu(self) -> gtk.Menu:
         serialMenu = self.build_serial_submenu(None)
         memoryMenu = self.build_memory_submenu(None, 0)
 
@@ -238,33 +238,36 @@ class gtkController():
 
         return menu
 
-    def quit(self, source):
+    def quit(self) -> None:
         gtk.main_quit(self)
 
-    def tenmaTurnOn(self, source):
-        try:
-            self.T.ON()
-        except Exception as e:
-            notify.Notification.new("<b>ERROR</b>", repr(e),
-                                    gtk.STOCK_DIALOG_ERROR).show()
+    def tenmaTurnOn(self) -> None:
+        if self.T:
+            try:
+                self.T.ON()
+            except Exception as e:
+                notify.Notification.new("<b>ERROR</b>", repr(e),
+                                        gtk.STOCK_DIALOG_ERROR).show()
 
-    def tenmaTurnOff(self, source):
-        try:
-            self.T.OFF()
-        except Exception as e:
-            notify.Notification.new("<b>ERROR</b>", repr(e),
-                                    gtk.STOCK_DIALOG_ERROR).show()
+    def tenmaTurnOff(self) -> None:
+        if self.T:
+            try:
+                self.T.OFF()
+            except Exception as e:
+                notify.Notification.new("<b>ERROR</b>", repr(e),
+                                        gtk.STOCK_DIALOG_ERROR).show()
 
-    def tenmaReset(self, source):
-        try:
-            self.T.OFF()
-            self.T.ON()
-        except Exception as e:
-            notify.Notification.new("<b>ERROR</b>", repr(e),
-                                    gtk.STOCK_DIALOG_ERROR).show()
+    def tenmaReset(self) -> None:
+        if self.T:
+            try:
+                self.T.OFF()
+                self.T.ON()
+            except Exception as e:
+                notify.Notification.new("<b>ERROR</b>", repr(e),
+                                        gtk.STOCK_DIALOG_ERROR).show()
 
 
-def main():
+def main() -> None:
     notify.init(APPINDICATOR_ID)
     controller = gtkController()
     indicator = appindicator.Indicator.new(APPINDICATOR_ID,

@@ -1,0 +1,7 @@
+# linting and formatting
+black
+ruff
+mypy
+
+# testing
+pytest

@@ -19,15 +19,10 @@
 """
 import argparse
 
-# TODO this is just a trick so tenmaControl runs cleanly from both the source tree
-# and the pip installation
-try:
-    from tenma.tenmaDcLib import instantiate_tenma_class_from_device_response, TenmaException
-except Exception:
-    from tenmaDcLib import instantiate_tenma_class_from_device_response, TenmaException
+from .tenmaDcLib import instantiate_tenma_class_from_device_response, TenmaException
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description='Control a Tenma 72-2540 power supply connected to a serial port')
     parser.add_argument('device', default="/dev/ttyUSB0")
