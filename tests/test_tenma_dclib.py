@@ -99,4 +99,7 @@ class TestTenma72Base:
 
         self.mock_serial_instance.wait_cnt = 5
         self.mock_serial_instance.return_read = b"\xFF"
-        assert Mode("C.V", "C.V", TrackingModeType(3), True, True, True, False) == self.tm_base.get_status()
+        assert (
+            Mode("C.V", "C.V", TrackingModeType(3), True, True, True, False)
+            == self.tm_base.get_status()
+        )
