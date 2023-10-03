@@ -20,26 +20,31 @@ except ModuleNotFoundError:
 
 
 class MockSerial:
+    return_read: bytes = 0
+
     def __init__(self, *args, **kwargs):
         self.wait_cnt = 5
 
-    def read(self):
-        pass
+    def read(self, size) -> bytes:
+        return self.return_read
 
     def write(self, cmd):
         pass
 
-    # @property
+    @property
     def in_waiting(self):
         self.wait_cnt -= 1
+        if self.wait_cnt == 0:
+            self.wait_cnt = 5
+            return 0
         return self.wait_cnt
 
 
 class TestTenma72Base:
     def setup_class(cls) -> None:  # noqa N805
-        with mock.patch("serial.Serial") as mock_serial:
+        with mock.patch("serial.Serial", new=MockSerial) as mock_serial:
             cls.tm_base = Tenma72Base("COM3")
-            cls.mock_serial_instance = mock_serial.return_value
+            cls.mock_serial_instance = mock_serial
 
         # cls.tm_base.close
         # cls.tm_base.get_status
@@ -81,6 +86,17 @@ class TestTenma72Base:
             self.tm_base.check_voltage(1, self.tm_base.MAX_MV + 1)
 
     def test_get_status(self) -> None:
-        self.mock_serial_instance.read.return_value = b"\x01"
-        self.mock_serial_instance.in_waiting = 0
+        self.mock_serial_instance.return_read = b"\x00"
         assert Mode("C.C", "C.C", TrackingModeType(0)) == self.tm_base.get_status()
+
+        self.mock_serial_instance.wait_cnt = 5
+        self.mock_serial_instance.return_read = b"\x01"
+        assert Mode("C.V", "C.C", TrackingModeType(0)) == self.tm_base.get_status()
+
+        self.mock_serial_instance.wait_cnt = 5
+        self.mock_serial_instance.return_read = b"\x02"
+        assert Mode("C.C", "C.V", TrackingModeType(0)) == self.tm_base.get_status()
+
+        self.mock_serial_instance.wait_cnt = 5
+        self.mock_serial_instance.return_read = b"\xFF"
+        assert Mode("C.V", "C.V", TrackingModeType(3), True, True, True, False) == self.tm_base.get_status()

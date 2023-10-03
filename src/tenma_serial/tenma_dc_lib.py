@@ -49,6 +49,7 @@ class TrackingModeType(IntEnum):
     Independent = 0
     TrackingSeries = 1
     TrackingParallel = 2
+    Unknown = 3
 
 
 @dataclass
