@@ -45,5 +45,5 @@ known-first-party = ["tenma_serial"]
 ignore_missing_imports = true
 strict = true
 cache_dir = ".caches/.mypy"
-exclude = ["venv"]
+exclude = ["venv", "tests", "examples"]
 explicit_package_bases = true
