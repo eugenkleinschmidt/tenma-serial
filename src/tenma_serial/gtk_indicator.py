@@ -116,9 +116,9 @@ class GtkController:
 
         self.item_connectedPort.set_label(self.serial_port)
         self.item_unit_version.set_label(ver[:20])
-        self.memoryMenu = self.build_memory_submenu(None, self.T.NCONFS)
+        self.memoryMenu = self.build_memory_submenu(self.T.NCONFS)
 
-    def memory_selected(self, source):
+    def memory_selected(self, source: gtk.MenuItem) -> None:
         """Select one of the multiple memories."""
         if self.T:
             try:
@@ -130,7 +130,7 @@ class GtkController:
                     "<b>ERROR</b>", repr(e), gtk.STOCK_DIALOG_ERROR
                 ).show()
 
-    def build_memory_submenu(self, source, nmemories: int):
+    def build_memory_submenu(self, nmemories: int) -> gtk.Menu:
         """
         Build a submenu containing a list of INTS
         with the available memories for the unit.
@@ -149,7 +149,7 @@ class GtkController:
 
         return self.memoryMenu
 
-    def build_serial_submenu(self, source):
+    def build_serial_submenu(self) -> gtk.Menu:
         """
         Build the serialSubmenu assuming that it is un runtime (remove,
         existing entries and call show in all new entries).
@@ -184,8 +184,8 @@ class GtkController:
             [i.set_sensitive(False) for i in self.itemSet]
 
     def build_gtk_menu(self) -> gtk.Menu:
-        serial_menu = self.build_serial_submenu(None)
-        memory_menu = self.build_memory_submenu(None, 0)
+        serial_menu = self.build_serial_submenu()
+        memory_menu = self.build_memory_submenu(0)
 
         menu = gtk.Menu()
 

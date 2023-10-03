@@ -38,10 +38,9 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import Literal
+from typing import Generator, Literal
 
 import serial
-from typing_extensions import Generator
 
 ChannelModeType = Literal["C.V", "C.C"]
 
@@ -162,7 +161,7 @@ class Tenma72Base:
         :return: Bytes read as a list of integers
         """
         out = bytearray()
-        while self.ser.inWaiting() > 0:
+        while self.ser.in_waiting > 0:
             out.append(ord(self.ser.read(1)))
 
         if self.DEBUG:
@@ -177,7 +176,7 @@ class Tenma72Base:
         :return: Data read as a string
         """
         out = ""
-        while self.ser.inWaiting() > 0:
+        while self.ser.in_waiting > 0:
             out += self.ser.read(1).decode("ascii")
 
         if self.DEBUG:
@@ -207,7 +206,7 @@ class Tenma72Base:
         """
         if mv > self.MAX_MV:
             raise TenmaError(
-                "Trying to set CH{channel} voltage to {mv}mV, the maximum is {self.MAX_MV}mV"
+                f"Trying to set CH{channel} voltage to {mv}mV, the maximum is {self.MAX_MV}mV"
             )
 
     def check_current(self, channel: int, ma: int) -> None:

@@ -18,13 +18,11 @@ exclude = '''
 select = ["A", "B", "C", "D", "E", "F", "I", "N", "UP", "PT", "W", "Q"]
 ignore = ["D100", "D101", "D104", "D211", "D212"]
 
-
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 fixable = ["A", "B", "C", "D", "E", "F", "I", "N", "UP", "PT", "W", "Q"]
 # fix = true
 show-fixes = true
 unfixable = []
-
 
 line-length = 120  # let black to line formatting
 cache-dir = ".caches/.ruff"
@@ -48,3 +46,4 @@ ignore_missing_imports = true
 strict = true
 cache_dir = ".caches/.mypy"
 exclude = ["venv"]
+explicit_package_bases = true
