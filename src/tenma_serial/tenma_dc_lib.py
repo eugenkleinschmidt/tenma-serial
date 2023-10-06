@@ -114,12 +114,16 @@ class Tenma72Base:
     MAX_MV = 30000
     SERIAL_EOL = ""
 
-    def __init__(self, serial_port: str, debug: bool = False) -> None:
+    def __init__(
+        self, serial_port: str, command_delay: float = 0.2, debug: bool = False
+    ) -> None:
         """Control a Tenma 72-XXXX DC bench power supply.
 
         Defaults in this class assume a 72-2540, use
         subclasses for other models
         """
+        self.command_delay = command_delay
+
         self.ser = serial.Serial(
             port=serial_port,
             baudrate=9600,
@@ -153,7 +157,7 @@ class Tenma72Base:
         command = command + self.SERIAL_EOL
         self.ser.write(command.encode("ascii"))
         # Give it time to process
-        time.sleep(0.2)
+        time.sleep(self.command_delay)
 
     def _read_bytes(self) -> bytearray:
         """
