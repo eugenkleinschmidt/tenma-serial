@@ -23,21 +23,28 @@ class MockSerial:
     return_read: bytes = 0
 
     def __init__(self, *args, **kwargs):
-        self.wait_cnt = 5
+        self.__wait_cnt = 6
 
     def read(self, size) -> bytes:
-        return self.return_read
+        if len(self.return_read) == 1:
+            return self.return_read
+        ret = self.return_read[:size]
+        self.return_read = self.return_read[size:]
+        return ret
 
     def write(self, cmd):
         pass
 
+    def __in_waiting(self):
+        self.__wait_cnt -= 1
+
     @property
     def in_waiting(self):
-        self.wait_cnt -= 1
-        if self.wait_cnt == 0:
-            self.wait_cnt = 5
+        self.__in_waiting()
+        if self.__wait_cnt == 0:
+            self.__wait_cnt = 6
             return 0
-        return self.wait_cnt
+        return self.__wait_cnt
 
 
 class TestTenma72Base:
@@ -47,8 +54,6 @@ class TestTenma72Base:
             cls.mock_serial_instance = mock_serial
 
         # cls.tm_base.close
-        # cls.tm_base.get_status
-        # cls.tm_base.get_version
         # cls.tm_base.off
         # cls.tm_base.on
         # cls.tm_base.read_current
@@ -103,3 +108,7 @@ class TestTenma72Base:
             Mode("C.V", "C.V", TrackingModeType(3), True, True, True, False)
             == self.tm_base.get_status()
         )
+
+    def test_get_version(self) -> None:
+        self.mock_serial_instance.return_read = b"\x31\x32\x33\x34\x35"
+        assert "12345" == self.tm_base.get_version()
