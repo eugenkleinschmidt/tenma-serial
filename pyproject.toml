@@ -14,6 +14,12 @@ exclude = '''
 
 # RUFF settings
 [tool.ruff]
+line-length = 120  # let black do line formatting
+show-fixes = true
+fix=true
+cache-dir = ".caches/.ruff"
+
+[tool.ruff.lint]
 # see https://beta.ruff.rs/docs/rules/
 select = ["A", "B", "C", "D", "E", "F", "I", "N", "UP", "PT", "W", "Q"]
 ignore = ["D100", "D101", "D104", "D211", "D212"]
@@ -21,23 +27,20 @@ ignore = ["D100", "D101", "D104", "D211", "D212"]
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 fixable = ["A", "B", "C", "D", "E", "F", "I", "N", "UP", "PT", "W", "Q"]
 # fix = true
-show-fixes = true
 unfixable = []
 
-line-length = 120  # let black to line formatting
-cache-dir = ".caches/.ruff"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/*.py" = ["D"]
 "gtk_indicator.py" = ["D"]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 10
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["tenma_serial"]
 
 # MYPY settings
